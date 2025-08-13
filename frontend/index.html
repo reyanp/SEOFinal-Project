@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Let's Meet</title>
+    <!-- Tailwind (CDN - dev only, replace with build version for production) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body class="min-h-screen bg-white text-slate-900">
+    <!-- Header -->
+    <header class="bg-white border-b">
+      <div class="text-center py-6">
+        <h1 class="text-2xl font-bold text-slate-900">Let's Meet</h1>
+        <p class="text-sm text-slate-500 mt-1">Find a great place halfway between two people</p>
+      </div>
+    </header>
+
+    <!-- Search controls -->
+    <section class="bg-white border-b">
+      <div class="max-w-4xl mx-auto px-4 py-4">
+        <form id="search-form" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Your address</label>
+            <input id="address1" type="text" placeholder="Enter your location" required class="w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Friend's address</label>
+            <input id="address2" type="text" placeholder="Enter friend's location" required class="w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Place type</label>
+            <select id="placeType" required class="w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <option value="restaurant" selected>Restaurant</option>
+              <option value="cafe">Cafe</option>
+              <option value="bakery">Bakery</option>
+              <option value="bar">Bar</option>
+              <option value="park">Park</option>
+              <option value="museum">Museum</option>
+              <option value="shopping_mall">Shopping Mall</option>
+              <option value="movie_theater">Movie Theater</option>
+              <option value="library">Library</option>
+              <option value="gym">Gym</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary h-fit">Find Places</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Map with left sidebar -->
+    <main class="flex h-[calc(100vh-180px)]">
+      <!-- Results panel (always visible) -->
+      <div id="results-panel" class="w-80 bg-white border-r flex flex-col">
+        <div class="p-4 border-b bg-slate-50">
+          <h3 class="font-semibold text-slate-900">Results</h3>
+        </div>
+        <div class="flex-1 overflow-auto">
+          <ul id="results-list" class="p-3 space-y-2"></ul>
+          <div id="no-results" class="p-4 text-center text-slate-500 text-sm hidden">
+            Search for places to see results here
+          </div>
+        </div>
+      </div>
+
+      <!-- Map -->
+      <div id="map" class="flex-1 bg-gray-100"></div>
+
+      <!-- Place details panel (Google Maps style) -->
+      <div id="place-panel" class="fixed left-0 top-0 w-96 h-full bg-white shadow-xl border-r transform -translate-x-full transition-transform duration-300 ease-out z-50 hidden">
+        <div class="flex flex-col h-full">
+          <!-- Header -->
+          <div class="p-4 border-b flex items-center justify-between">
+            <h2 id="place-title" class="text-xl font-semibold text-slate-900"></h2>
+            <button id="close-place-panel" class="text-slate-400 hover:text-slate-600 text-xl">✕</button>
+          </div>
+          
+          <!-- Content -->
+          <div class="flex-1 overflow-auto p-4 space-y-4">
+            <div id="place-rating" class="flex items-center gap-2"></div>
+            <div id="place-address" class="text-slate-600"></div>
+            
+            <!-- Travel times section -->
+            <div id="travel-times" class="space-y-3">
+              <h3 class="font-medium text-slate-900">Travel Times</h3>
+              <div id="travel-time-you" class="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">Y</div>
+                <div>
+                  <div class="font-medium text-slate-900">You</div>
+                  <div id="time-you" class="text-sm text-slate-600"></div>
+                </div>
+              </div>
+              <div id="travel-time-friend" class="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
+                <div class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white text-sm font-bold">F</div>
+                <div>
+                  <div class="font-medium text-slate-900">Friend</div>
+                  <div id="time-friend" class="text-sm text-slate-600"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Directions buttons -->
+            <div class="space-y-2">
+              <h3 class="font-medium text-slate-900">Directions</h3>
+              <a id="directions-you" href="#" target="_blank" class="btn btn-primary w-full justify-center">
+                🚗 Directions from your location
+              </a>
+              <a id="directions-friend" href="#" target="_blank" class="btn btn-outline w-full justify-center">
+                🚗 Directions from friend's location
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="./script.js"></script>
+    <!-- Replace YOUR_API_KEY with your actual key (restricted to localhost:5500) -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDx5xwLGLEw2DyizfwpgYE3kmyzThT48M4&libraries=places,marker&v=weekly&callback=initMap&loading=async"></script>
+  </body>
+  </html>
+
+
